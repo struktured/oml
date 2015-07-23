@@ -38,3 +38,7 @@ val update : ?size:int -> ?mean_update:mean_update ->  ?var_update:var_update ->
     first observed the elements by [t1] and then [t2] using update rules
     [mean_update] and [var_update] (defaulting to unbiased) *)
 val join : ?mean_update:mean_update -> ?var_update:var_update -> t -> t -> t
+
+(** [part ?mean_update ?var_update t1 t2] return a [Running.t] if you had
+    called join on [t1] and [t2] and now wish to forget the contribution of [t2] *)
+val part : ?mean_update:mean_update -> ?var_update:var_update -> t -> t -> t
