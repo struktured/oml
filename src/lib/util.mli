@@ -18,8 +18,10 @@
 (** {2 Utilities}
 
 + general methods that are reused in other modules.
-+ overrides and 
-+ extensions of standard library modules (ex. {!Array}) with useful methods (ex. {!Array.fold2} and {!Array.sumf})
++ overrides and
++ extensions of standard library modules
+    (ex. {{:http://caml.inria.fr/pub/docs/manual-ocaml/libref/Array.html}Array})
+    with useful methods (ex. {!Array.fold2} and {!Array.sumf})
 *)
 
 (** Some of the iterative routines can fail for the following reasons. *)
@@ -39,7 +41,7 @@ val pi : float
 
 val midpoint : float -> float -> float
 
-(** Extend the [Array] module with useful functions. *) 
+(** Extend the [Array] module with useful functions. *)
 module Array : sig
   include (module type of Array)
 
@@ -51,7 +53,7 @@ module Array : sig
 
   (** [Array.map2 f a b] applies [f] to all of the aligned elements of [a] and
       [b].
-      
+
       @raise Invalid_argument if the lengths are unequal. *)
   val map2 : ('a -> 'b -> 'c) -> 'a array -> 'b array -> 'c array
 
@@ -73,7 +75,7 @@ module Array : sig
       [f a.(i)] is true *)
   val find_index : ('a -> bool) -> 'a array -> int
 
-  (** [Array.binary_search c a], find the index of element [e] in [a] where
+  (** [binary_search c a], find the index of element [e] in [a] where
       [c e = 0]. Where [c e'] returns < 0 if [e' < e] and [> 0] if [e' > e].
 
       If no element is found where [c e = 0] then the largest index such that
@@ -114,7 +116,17 @@ module Array : sig
   val ranks : ?start:int -> ?average_ties:bool -> ?compare:(float -> float -> int)
               -> float array -> float array
 
-end
+  (** [zip x y] construct an array that stores the elements of x and y as a tuple.
+
+    @raise Invalid_argument if the arrays of unequal length.
+  *)
+  val zip : 'a array -> 'b array -> ('a * 'b) array
+
+  (** [unzip arr] split an array of tuples into an array of the first value and
+      an array of the second. *)
+  val unzip : ('a * 'b) array -> ('a array * 'b array)
+
+end (* Array *)
 
 (** A really small value. Also known as the machine epsilon, the smallest
     distance between two representable floats. *)
@@ -123,6 +135,10 @@ val dx : float
 (** [significantly_different_from ?d x y] will check if [y] is more than [d]
     (defaults to [dx]) away from [x]. *)
 val significantly_different_from : ?d:float -> float -> float -> bool
+
+(** [equal_floats d x y] compares [x] and [y] too see if they are equal,
+    specifically [not (significantly_different_from ~d x y)].*)
+val equal_floats : d:float -> float -> float -> bool
 
 (** [is_nan x] robustly determine if a float represents NaN (aka Not a number). *)
 val is_nan : float -> bool
@@ -146,4 +162,16 @@ module Float : sig
   val ( * ) : float -> float -> float
 
 end
+
+(** When passing optional arguments to procedures. *)
+module type Optional_arg_intf = sig
+
+  type spec             (** type of default argument. *)
+  val default : spec    (** A default value used when not specified.*)
+end
+
+
+val fst3 : ('a * 'b * 'c) -> 'a
+val snd3 : ('a * 'b * 'c) -> 'b
+val thr3 : ('a * 'b * 'c) -> 'c
 
