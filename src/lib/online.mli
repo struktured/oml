@@ -60,13 +60,19 @@ module Make (Update : Update_rules) : sig
 
   (** [join t1 t2] return a {Online.t} if you had first observed the elements
       by [t1] and then [t2]. *)
-  val join : t -> t -> t
+  val join : ?weight:int -> t -> t -> t
+  val part : ?weight:int -> t -> t -> t
 end
 
 (** [update ?size t x] incorporate [x] with given [size] (defaulting to [1])
     into the statistics tracked in [t], using Welford std update rule. *)
 val update : ?size:int -> t -> float -> t
 
-(** [join t1 t2] return a [Online.t] if you had first observed the elements by
-    [t1] and then [t2] using Welford std update rules. *)
-val join : t -> t -> t
+(** [join ?weight t1 t2] return a [online.t] if you had first observed the elements by
+    [t1] and then [t2] using welford std update rules. *)
+val join : ?weight:int -> t -> t -> t
+
+(** [part ?weight t1 t2] return a [online.t] if you had called join on 
+    [t1] and [t2] and now wish to forget the contribution of [t2] *)
+
+val part : ?weight:int -> t -> t -> t

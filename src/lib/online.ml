@@ -87,19 +87,21 @@ module Make (Update : Update_rules) = struct
       ; var    = n_var
       }
 
-  let join rs1 rs2 =
+  let join ?(weight=1) rs1 rs2 =
     if rs1.size = 0 then
       rs2
     else if rs2.size = 0 then
       rs1
     else
-      let n_size_i = rs1.size + rs2.size in
-      let size_f = float rs2.size in
+      let weight_f = float weight in
+      let weighted_rs2_size = weight * rs2.size in
+      let n_size_i = rs1.size + weighted_rs2_size in
       let n_size = float n_size_i in
-      let n_sum  = rs1.sum +. rs2.sum in
-      let n_sum_sq = rs1.sum_sq +. rs2.sum_sq in
+      let n_sum  = rs1.sum +. weight_f *. rs2.sum in
+      let n_sum_sq = rs1.sum_sq +. weight_f *. rs2.sum_sq in
       let {n_mean; n_var} =
-        Update.apply ~size:size_f ~n_sum ~n_sum_sq ~n_size rs1 rs2.mean
+        Update.apply ~size:(float weighted_rs2_size) 
+          ~n_sum ~n_sum_sq ~n_size rs1 rs2.mean
       in
       { size = n_size_i
       ; last = rs2.last              (* dangerous, *)
@@ -110,8 +112,9 @@ module Make (Update : Update_rules) = struct
       ; mean = n_mean
       ; var  = n_var
       }
-
+  let part ?(weight=1) = join ~weight:(-weight)
 end
+
 
 module Default = struct
 
