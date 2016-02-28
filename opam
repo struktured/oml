@@ -13,7 +13,7 @@ install: [make "install"]
 remove: ["ocamlfind" "remove" "oml"]
 depends: [
   "ocamlfind" {build}
-  "lacaml"
+  "lacaml" {>= "8.0.6"}
   "lbfgs"
-  "ocephes"
+  "ocephes" {>= "0.8"}
 ]
